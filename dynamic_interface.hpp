@@ -35,7 +35,7 @@ __VA_OPT__(, _detail_map_macro_a _detail_PARENS (macro, __VA_ARGS__))
 #define _detail_LEAD_COMMA_H(...) __VA_OPT__(,)
 #define _detail_INTERFACE_FPD_H(l) _detail_INTERFACE_FUNCTION_PTR_DECL l
 #define _detail_INTERFACE_LIMP_H(l) _detail_INTERFACE_LAMBDA_IMPL l
-#define _detail_INTERACE_METHOD_H(l) _detail_INTERFACE_METHOD l
+#define _detail_INTERFACE_METHOD_H(l) _detail_INTERFACE_METHOD l
 #define _detail_LEAD_COMMA_H_E(l) _detail_LEAD_COMMA_H l
 #define _detail_INTERFACE_LAMBDA_IMPL(type, name, ...) \
 name([](void * _vp __VA_OPT__(,_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) \
@@ -58,7 +58,7 @@ class n { \
     n() = default; \
     template <typename T> \
     n(T&& v) : body(v) {} \
-    _detail_foreach_macro(_detail_INTERACE_METHOD_H, _detail_EXPAND_LIST l)    \
+    _detail_foreach_macro(_detail_INTERFACE_METHOD_H, _detail_EXPAND_LIST l)    \
     operator bool() {return body._ref != nullptr;}\
 };
 #define DECLARE_INTERFACE(name, ...) _detail_DECLARE_INTERFACE(name, (__VA_ARGS__))
