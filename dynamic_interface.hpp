@@ -23,7 +23,7 @@ __VA_OPT__(, _detail_map_macro_a _detail_PARENS (macro, __VA_ARGS__))
 #define _detail_map_macro_a() _detail_map_macro_h
 #define _detail_CONCAT_H(a, b) a ## b
 #define _detail_CONCAT(a, b) _detail_CONCAT_H(a, b)
-#define _detail_PARAM_LIST_H(b, c, f, ...) c __VA_OPT__(, _detail_PARAM_LIST_A _detail_PARENS (b, _detail_CONCAT(b, c), __VA_ARGS__))
+#define _detail_PARAM_LIST_H(b, c, f, ...) std::forward<decltype(c)>(c) __VA_OPT__(, _detail_PARAM_LIST_A _detail_PARENS (b, _detail_CONCAT(b, c), __VA_ARGS__))
 #define _detail_PARAM_LIST_A() _detail_PARAM_LIST_H
 #define _detail_PARAM_LIST(...) _detail_EXPAND_(_detail_PARAM_LIST_H(__VA_ARGS__))
 #define _detail_PARAM_LIST_2H(b, c, f, ...) f c __VA_OPT__(, _detail_PARAM_LIST_2A _detail_PARENS (b, _detail_CONCAT(b, c), __VA_ARGS__))
@@ -78,16 +78,18 @@ EXPANDS TO:
             template <typename _tp>
             _impl(_tp &&v)
                 : _ref(const_cast<std ::remove_cvref_t<_tp> *>(&v)),
-                  print([](void *_vp, const char *_sig) {
-                      return std ::bit_cast<std ::remove_cvref_t<_tp> *>(_vp)
-                          ->print(_sig);
-                  }) {}
+                print([](void *_vp, const char *_sig) {
+                    return std ::bit_cast<std ::remove_cvref_t<_tp> *>(_vp)
+                        ->print(std ::forward<decltype(_sig)>(_sig));
+                }) {}
         } body;
 
-      public:
+    public:
         example() = default;
         template <typename T> example(T &&v) : body(v) {}
-        void print(const char *_sig) { return body.print(body._ref, _sig); }
+        void print(const char *_sig) {
+            return body.print(body._ref, std ::forward<decltype(_sig)>(_sig));
+        }
         operator bool() { return body._ref != nullptr; }
     };
 
