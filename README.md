@@ -23,16 +23,18 @@ class example {
             template <typename _tp>
             _impl(_tp &&v)
                 : _ref(const_cast<std ::remove_cvref_t<_tp> *>(&v)),
-                  print([](void *_vp, const char *_sig) {
-                      return std ::bit_cast<std ::remove_cvref_t<_tp> *>(_vp)
-                          ->print(_sig);
-                  }) {}
+                print([](void *_vp, const char *_sig) {
+                    return std ::bit_cast<std ::remove_cvref_t<_tp> *>(_vp)
+                        ->print(std ::forward<decltype(_sig)>(_sig));
+                }) {}
         } body;
 
-      public:
+    public:
         example() = default;
         template <typename T> example(T &&v) : body(v) {}
-        void print(const char *_sig) { return body.print(body._ref, _sig); }
+        void print(const char *_sig) {
+            return body.print(body._ref, std ::forward<decltype(_sig)>(_sig));
+        }
         operator bool() { return body._ref != nullptr; }
     };
 */
