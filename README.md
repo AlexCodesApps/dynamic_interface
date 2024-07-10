@@ -2,13 +2,13 @@
 Unreadable Macro Hell To Create Something Cool
 
 # How To Use
-```
+```cpp
 DECLARE_INTERFACE(name,
     (type, method, arg_types...), // You Can Declare A Method Like This
     INTERFACE_METHOD(type, method, arg_types...) // Or This
 )
 ```
-```
+```cpp
 // THIS INTERFACE:
 DECLARE_INTERFACE(example,
     (void, print, const char *)
