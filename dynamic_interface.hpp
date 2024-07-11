@@ -92,7 +92,7 @@ public: \
     n() = default; \
     template <typename _tp> \
     n(_tp&& v) \
-    : _obj(new _impl<std::remove_reference_t<_tp>>(v)) {} \
+    : _obj(new _impl<typename std::remove_reference<_tp>::type>(v)) {} \
     n(_detail_CONCAT(_concept_, n) * _v) : _obj(_v) {} \
     _detail_foreach_macro(_detail_VALUE_INTERFACE_METHOD_CALL_H, _detail_EXPAND_LIST l)\
     n clone() const {return _obj->_clone();} \
