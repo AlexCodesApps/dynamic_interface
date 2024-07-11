@@ -27,16 +27,15 @@ class example {
                     return std ::bit_cast<std ::remove_cvref_t<_tp> *>(_vp)
                         ->print(std ::forward<decltype(_sig)>(_sig));
                 }) {}
-        } body;
+        } _body;
 
     public:
         example() = default;
-        template <typename T> example(T &&v) : body(v) {}
+        template <typename _tp> example(_tp &&v) : _body(v) {}
         void print(const char *_sig) {
-            return body.print(body._ref, std ::forward<decltype(_sig)>(_sig));
+            return _body.print(_body._ref, std ::forward<decltype(_sig)>(_sig));
         }
-        operator bool() { return body._ref != nullptr; }
+        operator bool() { return _body._ref != nullptr; }
     };
 */
 ```
-

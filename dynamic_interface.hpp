@@ -42,7 +42,7 @@ name([](void * _vp __VA_OPT__(,_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) \
 {return std::bit_cast<std::remove_cvref_t<_tp> *>(_vp)->name(__VA_OPT__(_detail_PARAM_LIST(a, _sig, __VA_ARGS__)));})
 #define _detail_INTERFACE_METHOD(type, name, ...) \
 type name(__VA_OPT__(_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) { \
-    return body.name(body._ref __VA_OPT__(, _detail_PARAM_LIST(a, _sig, __VA_ARGS__))); \
+    return _body.name(_body._ref __VA_OPT__(, _detail_PARAM_LIST(a, _sig, __VA_ARGS__))); \
 }
 #define _detail_DECLARE_INTERFACE(n, l) \
 class n { \
@@ -53,13 +53,13 @@ class n { \
         template <typename _tp> \
         _impl(_tp&& v) \
         : _ref(const_cast<std::remove_cvref_t<_tp> *>(&v)) _detail_LEAD_COMMA_H_E(l) _detail_map_macro(_detail_INTERFACE_LIMP_H, _detail_EXPAND_LIST l) {}\
-    } body;\
+    } _body;\
     public: \
     n() = default; \
-    template <typename T> \
-    n(T&& v) : body(v) {} \
+    template <typename _tp> \
+    n(_tp&& v) : _body(v) {} \
     _detail_foreach_macro(_detail_INTERFACE_METHOD_H, _detail_EXPAND_LIST l)    \
-    operator bool() {return body._ref != nullptr;}\
+    operator bool() {return _body._ref != nullptr;}\
 };
 #define DECLARE_INTERFACE(name, ...) _detail_DECLARE_INTERFACE(name, (__VA_ARGS__))
 #define INTERFACE_METHOD(...) (__VA_ARGS__),
@@ -82,15 +82,15 @@ EXPANDS TO:
                     return std ::bit_cast<std ::remove_cvref_t<_tp> *>(_vp)
                         ->print(std ::forward<decltype(_sig)>(_sig));
                 }) {}
-        } body;
+        } _body;
 
     public:
         example() = default;
-        template <typename T> example(T &&v) : body(v) {}
+        template <typename _tp> example(_tp &&v) : _body(v) {}
         void print(const char *_sig) {
-            return body.print(body._ref, std ::forward<decltype(_sig)>(_sig));
+            return _body.print(_body._ref, std ::forward<decltype(_sig)>(_sig));
         }
-        operator bool() { return body._ref != nullptr; }
+        operator bool() { return _body._ref != nullptr; }
     };
 
 */

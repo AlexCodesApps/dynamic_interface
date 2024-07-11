@@ -23,18 +23,32 @@ struct circle {
     float area() {
         return radius * radius * std::numbers::pi;
     }
-    float circumfrence() {
+    float circumference() {
         return radius * 2.0f * std::numbers::pi;
     }
     float perimeter() {
-        return circumfrence();
+        return circumference();
     }
 };
-
 struct square {
-    int w, h;
+    int w;
     void draw(position p) {
         std::cout << " A Square Is Recorded At " << p.x << " " << p.y << std::endl;
+    }
+    int count_sides() {
+        return 4;
+    }
+    float area() {
+        return w * w;
+    }
+    float perimeter() {
+        return w * 4;
+    }
+};
+struct rectangle {
+    int w, h;
+    void draw(position p) {
+        std::cout << " A Rectangle Is Recorded At " << p.x << " " << p.y << std::endl;
     }
     int count_sides() {
         return 4;
@@ -56,11 +70,11 @@ struct regular_polygon {
     int count_sides() {
         return sides;
     }
-    float radius() {
+    float apothem() {
         return (side_length/2) / std::tan(std::numbers::pi/sides);
     }
-    float apothem() {
-        return std::cos(std::numbers::pi/sides) * radius();
+    float radius() {
+        return (side_length/2) / std::sin(std::numbers::pi/sides);
     }
     float perimeter() {
         return sides * side_length;
@@ -79,9 +93,11 @@ void print_shape(shape s) {
 
 int main() {
     circle c{12.3};
-    square s{12, 9};
-    regular_polygon p{5, 3.8};
+    square s{32};
+    rectangle r{12, 9};
+    regular_polygon p{4, 32};
     print_shape(c);
     print_shape(s);
+    print_shape(r);
     print_shape(p);
 }
