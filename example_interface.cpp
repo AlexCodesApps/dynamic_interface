@@ -4,7 +4,7 @@
 
 struct position {float x, y;};
 
-DECLARE_VALUE_INTERFACE(shape,
+DECLARE_INTERFACE(shape,
     (void, draw, position),
     (int, count_sides),
     (float, area),
