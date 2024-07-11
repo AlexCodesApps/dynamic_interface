@@ -1,6 +1,6 @@
 # dynamic_interface
-Unreadable Macro Hell To Create Something Cool
-Supports C++11 And Up
+Unreadable Macro Hell To Create Something Cool.
+Supports C++11 And Up.
 # How To Use
 ```cpp
 DECLARE_INTERFACE(name,
