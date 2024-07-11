@@ -1,4 +1,3 @@
-#include <bit> // IWYU pragma: keep
 #include <memory>
 #include <type_traits>
 #define _detail_EXPAND(...) _detail_EXPAND4(_detail_EXPAND4(_detail_EXPAND4(_detail_EXPAND4(__VA_ARGS__))))
@@ -12,7 +11,7 @@
 #define _detail_EXPAND_3(...) _detail_EXPAND_2(_detail_EXPAND_2(_detail_EXPAND_2(_detail_EXPAND_2(__VA_ARGS__))))
 #define _detail_EXPAND_2(...) _detail_EXPAND_1(_detail_EXPAND_1(_detail_EXPAND_1(_detail_EXPAND_1(__VA_ARGS__))))
 #define _detail_EXPAND_1(...) __VA_ARGS__
-
+#define _detail_RMCVREF(x) typename std::remove_const<typename std::remove_volatile<typename std::remove_reference<x>::type>::type>::type
 #define _detail_PARENS ()
 #define _detail_foreach_macro_h(macro, a, ...) macro(a) \
 __VA_OPT__(_detail_foreach_macro_a _detail_PARENS (macro, __VA_ARGS__))
@@ -40,7 +39,7 @@ __VA_OPT__(, _detail_map_macro_a _detail_PARENS (macro, __VA_ARGS__))
 #define _detail_LEAD_COMMA_H_E(l) _detail_LEAD_COMMA_H l
 #define _detail_INTERFACE_LAMBDA_IMPL(type, name, ...) \
 name([](void * _vp __VA_OPT__(,_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) \
-{return std::bit_cast<std::remove_cvref_t<_tp> *>(_vp)->name(__VA_OPT__(_detail_PARAM_LIST(a, _sig, __VA_ARGS__)));})
+{return static_cast<_detail_RMCVREF(_tp) *>(_vp)->name(__VA_OPT__(_detail_PARAM_LIST(a, _sig, __VA_ARGS__)));})
 #define _detail_INTERFACE_METHOD(type, name, ...) \
 type name(__VA_OPT__(_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) { \
     return _body.name(_body._ref __VA_OPT__(, _detail_PARAM_LIST(a, _sig, __VA_ARGS__))); \
@@ -53,7 +52,7 @@ class n { \
         _impl() = default; \
         template <typename _tp> \
         _impl(_tp&& v) \
-        : _ref(const_cast<std::remove_cvref_t<_tp> *>(&v)) _detail_LEAD_COMMA_H_E(l) _detail_map_macro(_detail_INTERFACE_LIMP_H, _detail_EXPAND_LIST l) {}\
+        : _ref(const_cast<_detail_RMCVREF(_tp) *>(&v)) _detail_LEAD_COMMA_H_E(l) _detail_map_macro(_detail_INTERFACE_LIMP_H, _detail_EXPAND_LIST l) {}\
     } _body;\
     public: \
     n() = default; \
@@ -65,10 +64,10 @@ class n { \
 #define DECLARE_INTERFACE(name, ...) _detail_DECLARE_INTERFACE(name, (__VA_ARGS__))
 #define INTERFACE_METHOD(...) (__VA_ARGS__),
 
-#define _detail_VALUE_INTERFACE_METHOD(type, name, ...) virtual type name(__VA_ARGS__) const = 0;
+#define _detail_VALUE_INTERFACE_METHOD(type, name, ...) virtual type name(__VA_ARGS__) = 0;
 #define _detail_VALUE_INTERFACE_METHOD_H(l) _detail_VALUE_INTERFACE_METHOD l
 #define _detail_VALUE_INTERFACE_METHOD_IMPL(type, name, ...) virtual type name(__VA_OPT__(_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) \
-const override {return _v.name(__VA_OPT__(_detail_PARAM_LIST(a, _sig, __VA_ARGS__)));}
+override {return _v.name(__VA_OPT__(_detail_PARAM_LIST(a, _sig, __VA_ARGS__)));}
 #define _detail_VALUE_INTERFACE_METHOD_IMPL_H(l) _detail_VALUE_INTERFACE_METHOD_IMPL l
 #define _detail_VALUE_INTERFACE_METHOD_CALL(type, name, ...) type name(__VA_OPT__(_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) const \
 {return _obj->name(__VA_OPT__(_detail_PARAM_LIST(a, _sig, __VA_ARGS__)));}
@@ -78,6 +77,7 @@ class n { \
     struct _detail_CONCAT(_concept_, n) { \
         _detail_foreach_macro(_detail_VALUE_INTERFACE_METHOD_H, _detail_EXPAND_LIST l) \
         virtual _detail_CONCAT(_concept_, n) * _clone() const = 0; \
+        virtual ~_detail_CONCAT(_concept_, n)() = default;\
     }; \
     template <typename _tp> \
     struct _impl : public _detail_CONCAT(_concept_, n) { \
@@ -98,6 +98,7 @@ public: \
     n clone() const {return _obj->_clone();} \
 };
 #define DECLARE_VALUE_INTERFACE(name, ...) _detail_DECLARE_VALUE_INTERFACE(name, (__VA_ARGS__))
+
 /*
 THIS INTERFACE:
 DECLARE_INTERFACE(example,
@@ -111,9 +112,15 @@ EXPANDS TO:
             _impl() = default;
             template <typename _tp>
             _impl(_tp &&v)
-                : _ref(const_cast<std ::remove_cvref_t<_tp> *>(&v)),
+                : _ref(const_cast<
+                    typename std ::remove_const<typename std ::remove_volatile<
+                        typename std ::remove_reference<_tp>::type>::type>::type
+                        *>(&v)),
                 print([](void *_vp, const char *_sig) {
-                    return std ::bit_cast<std ::remove_cvref_t<_tp> *>(_vp)
+                    return static_cast<typename std ::remove_const<
+                        typename std ::remove_volatile<
+                            typename std ::remove_reference<_tp>::type>::type>::
+                                            type *>(_vp)
                         ->print(std ::forward<decltype(_sig)>(_sig));
                 }) {}
         } _body;
@@ -126,5 +133,4 @@ EXPANDS TO:
         }
         operator bool() { return _body._ref != nullptr; }
     };
-
 */

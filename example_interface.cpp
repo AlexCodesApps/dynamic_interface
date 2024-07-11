@@ -1,7 +1,6 @@
 #include "dynamic_interface.hpp"
 #include <cmath>
 #include <iostream>
-#include <numbers>
 
 struct position {float x, y;};
 
@@ -21,10 +20,10 @@ struct circle {
         return 1;
     }
     float area() {
-        return radius * radius * std::numbers::pi;
+        return radius * radius * M_PI;
     }
     float circumference() {
-        return radius * 2.0f * std::numbers::pi;
+        return radius * 2.0f * M_PI;
     }
     float perimeter() {
         return circumference();
@@ -71,10 +70,10 @@ struct regular_polygon {
         return sides;
     }
     float apothem() {
-        return (side_length/2) / std::tan(std::numbers::pi/sides);
+        return (side_length/2) / std::tan(M_PI/sides);
     }
     float radius() {
-        return (side_length/2) / std::sin(std::numbers::pi/sides);
+        return (side_length/2) / std::sin(M_PI/sides);
     }
     float perimeter() {
         return sides * side_length;

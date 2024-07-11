@@ -1,6 +1,6 @@
 # dynamic_interface
 Unreadable Macro Hell To Create Something Cool
-
+Supports C++11 And Up
 # How To Use
 ```cpp
 DECLARE_INTERFACE(name,
@@ -27,7 +27,7 @@ class example {
         struct _impl {
             void *_ref = nullptr;
             void (*print)(void *, const char *);
-            _impl() = default;
+            _impl() {};
             template <typename _tp>
             _impl(_tp &&v)
                 : _ref(const_cast<std ::remove_cvref_t<_tp> *>(&v)),
@@ -38,7 +38,7 @@ class example {
         } _body;
 
     public:
-        example() = default;
+        example() {};
         template <typename _tp> example(_tp &&v) : _body(v) {}
         void print(const char *_sig) {
             return _body.print(_body._ref, std ::forward<decltype(_sig)>(_sig));
