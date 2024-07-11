@@ -4,8 +4,16 @@ Unreadable Macro Hell To Create Something Cool
 # How To Use
 ```cpp
 DECLARE_INTERFACE(name,
-    (type, method, arg_types...), // You Can Declare A Method Like This
-    INTERFACE_METHOD(type, method, arg_types...) // Or This
+    (type, name, arg_types...), // You Can Declare A Method Like This
+    INTERFACE_METHOD(type, name, arg_types...) // Or This
+)
+```
+The Library Also Supports Value Based Interfaces,
+With Heap Allocation And A Clone Method.
+(Requires Copy Constructor, Could Have Some Unforseen Sharp Corners)
+```cpp
+DECLARE_VALUE_INTERFACE(name, // Same As Usual
+    (type, name, arg_types...)
 )
 ```
 ```cpp

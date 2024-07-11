@@ -1,4 +1,5 @@
 #include <bit> // IWYU pragma: keep
+#include <memory>
 #include <type_traits>
 #define _detail_EXPAND(...) _detail_EXPAND4(_detail_EXPAND4(_detail_EXPAND4(_detail_EXPAND4(__VA_ARGS__))))
 #define _detail_EXPAND4(...) _detail_EXPAND3(_detail_EXPAND3(_detail_EXPAND3(_detail_EXPAND3(__VA_ARGS__))))
@@ -64,6 +65,39 @@ class n { \
 #define DECLARE_INTERFACE(name, ...) _detail_DECLARE_INTERFACE(name, (__VA_ARGS__))
 #define INTERFACE_METHOD(...) (__VA_ARGS__),
 
+#define _detail_VALUE_INTERFACE_METHOD(type, name, ...) virtual type name(__VA_ARGS__) const = 0;
+#define _detail_VALUE_INTERFACE_METHOD_H(l) _detail_VALUE_INTERFACE_METHOD l
+#define _detail_VALUE_INTERFACE_METHOD_IMPL(type, name, ...) virtual type name(__VA_OPT__(_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) \
+const override {return _v.name(__VA_OPT__(_detail_PARAM_LIST(a, _sig, __VA_ARGS__)));}
+#define _detail_VALUE_INTERFACE_METHOD_IMPL_H(l) _detail_VALUE_INTERFACE_METHOD_IMPL l
+#define _detail_VALUE_INTERFACE_METHOD_CALL(type, name, ...) type name(__VA_OPT__(_detail_PARAM_LIST2(a, _sig, __VA_ARGS__))) const \
+{return _obj->name(__VA_OPT__(_detail_PARAM_LIST(a, _sig, __VA_ARGS__)));}
+#define _detail_VALUE_INTERFACE_METHOD_CALL_H(l) _detail_VALUE_INTERFACE_METHOD_CALL l
+#define _detail_DECLARE_VALUE_INTERFACE(n, l) \
+class n { \
+    struct _detail_CONCAT(_concept_, n) { \
+        _detail_foreach_macro(_detail_VALUE_INTERFACE_METHOD_H, _detail_EXPAND_LIST l) \
+        virtual _detail_CONCAT(_concept_, n) * _clone() const = 0; \
+    }; \
+    template <typename _tp> \
+    struct _impl : public _detail_CONCAT(_concept_, n) { \
+        _impl(const _tp& _v) : _v(_v) {} \
+        _detail_foreach_macro(_detail_VALUE_INTERFACE_METHOD_IMPL_H, _detail_EXPAND_LIST l) \
+        _tp _v; \
+        _impl * _clone() const override {return new _impl(*this);} \
+    }; \
+    std::unique_ptr<_detail_CONCAT(_concept_, n)> _obj; \
+    \
+public: \
+    n() = default; \
+    template <typename _tp> \
+    n(_tp&& v) \
+    : _obj(new _impl<std::remove_reference_t<_tp>>(v)) {} \
+    n(_detail_CONCAT(_concept_, n) * _v) : _obj(_v) {} \
+    _detail_foreach_macro(_detail_VALUE_INTERFACE_METHOD_CALL_H, _detail_EXPAND_LIST l)\
+    n clone() const {return _obj->_clone();} \
+};
+#define DECLARE_VALUE_INTERFACE(name, ...) _detail_DECLARE_VALUE_INTERFACE(name, (__VA_ARGS__))
 /*
 THIS INTERFACE:
 DECLARE_INTERFACE(example,
