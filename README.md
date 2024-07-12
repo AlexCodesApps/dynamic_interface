@@ -24,26 +24,32 @@ DECLARE_INTERFACE(example,
 // EXPANDS TO:
 /*
 class example {
-        struct _impl {
-            void *_ref = nullptr;
-            void (*print)(void *, const char *);
-            _impl() {};
-            template <typename _tp>
-            _impl(_tp &&v)
-                : _ref(const_cast<std ::remove_cvref_t<_tp> *>(&v)),
-                print([](void *_vp, const char *_sig) {
-                    return std ::bit_cast<std ::remove_cvref_t<_tp> *>(_vp)
-                        ->print(std ::forward<decltype(_sig)>(_sig));
-                }) {}
-        } _body;
+    struct _impl {
+        void *_ref = nullptr;
+        void (*print)(void *, const char *);
+        _impl() = default;
+        template <typename _tp>
+        _impl(_tp &&v)
+            : _ref(const_cast<
+                typename std ::remove_const<typename std ::remove_volatile<
+                    typename std ::remove_reference<_tp>::type>::type>::type
+                    *>(&v)),
+            print([](void *_vp, const char *_sig) {
+                return static_cast<typename std ::remove_const<
+                    typename std ::remove_volatile<
+                        typename std ::remove_reference<_tp>::type>::type>::
+                                        type *>(_vp)
+                    ->print(std ::forward<decltype(_sig)>(_sig));
+            }) {}
+    } _body;
 
-    public:
-        example() {};
-        template <typename _tp> example(_tp &&v) : _body(v) {}
-        void print(const char *_sig) {
-            return _body.print(_body._ref, std ::forward<decltype(_sig)>(_sig));
-        }
-        operator bool() { return _body._ref != nullptr; }
-    };
+public:
+    example() = default;
+    template <typename _tp> example(_tp &&v) : _body(v) {}
+    void print(const char *_sig) {
+        return _body.print(_body._ref, std ::forward<decltype(_sig)>(_sig));
+    }
+    operator bool() { return _body._ref != nullptr; }
+};
 */
 ```
